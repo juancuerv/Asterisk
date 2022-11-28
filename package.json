@@ -1,0 +1,18 @@
+{
+  "name": "codigo3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "start index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ari-client": "^2.2.0",
+    "gtts": "^0.2.1",
+    "mysql": "^2.18.1",
+    "sox-audio": "^0.3.0"
+  }
+}
