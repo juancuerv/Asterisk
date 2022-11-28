@@ -8,7 +8,7 @@ La opción "2" le permite al usuario realizar una nueva apuesta, por lo que, en 
 
 # Configuración del proyecto
 npm install para instalar todas las dependencias de node para el correcto funcionamiento.
-node 
+node index.js para ejecutar el sistema.
 
 ## Autores
 
