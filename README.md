@@ -7,8 +7,13 @@ Para el desarrollo de esta práctica, se requiere la implementación de una apli
 La opción "2" le permite al usuario realizar una nueva apuesta, por lo que, en un menú en formato de audio se le pedirá al usuario que digite su número de cédula y seguido a esto digite el símbolo "#" para confirmar que la cédula ingresada es correcta, o * para indicar que la cédula ingresada es incorrecta, lo cual hará que el menú se reinicie y le permita al usuario digitar nuevamente su número de cédula. Luego, se indicarán los próximos partidos disponibles para apostar en un menú. El usuario debe elegir el partido al cual va a apostar ingresando el digito correspondiente del menú. Justo después se deberá ingresar el marcador del partido, indicando los goles del local y los goles del visitante separados por un "#" (Ejemplo: 3#1). Posteriormente, se deberá ingresar el monto de la apuesta. Y finalmente, se confirma si la apuesta ha sido exitosa o si ha surgido algún problema. Si el usuario desea seguir apostando deberá marcar el "*" y si desea concluir la llamada deberá marcar "#". 
 
 # Configuración del proyecto
-npm install para instalar todas las dependencias de node para el correcto funcionamiento.
+npm install, para instalar todas las dependencias de node para el correcto funcionamiento.
+npm install gtts, para instalar la api de google text to speech
+npm i sox-audio, para instalar la api que convierte de mp3 a gsm
+npm install mysql
+
 node index.js para ejecutar el sistema.
+
 
 ## Autores
 
