@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-11-2022 a las 04:59:10
+-- Tiempo de generación: 29-11-2022 a las 05:04:00
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.1.12
 
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `apuesta`
+-- Estructura de tabla para la tabla `apuestas`
 --
 
-CREATE TABLE `apuesta` (
+CREATE TABLE `apuestas` (
   `id` int(11) NOT NULL,
   `id_partido` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
@@ -38,10 +38,10 @@ CREATE TABLE `apuesta` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `partido`
+-- Estructura de tabla para la tabla `partidos`
 --
 
-CREATE TABLE `partido` (
+CREATE TABLE `partidos` (
   `id` int(11) NOT NULL,
   `local` int(11) NOT NULL,
   `visitante` int(11) NOT NULL,
@@ -51,10 +51,10 @@ CREATE TABLE `partido` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `usuario`
+-- Estructura de tabla para la tabla `usuarios`
 --
 
-CREATE TABLE `usuario` (
+CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
   `cedula` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -64,23 +64,23 @@ CREATE TABLE `usuario` (
 --
 
 --
--- Indices de la tabla `apuesta`
+-- Indices de la tabla `apuestas`
 --
-ALTER TABLE `apuesta`
+ALTER TABLE `apuestas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_usuario_apuesta` (`id_usuario`),
   ADD KEY `fk_partido_apuesta` (`id_partido`);
 
 --
--- Indices de la tabla `partido`
+-- Indices de la tabla `partidos`
 --
-ALTER TABLE `partido`
+ALTER TABLE `partidos`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `usuario`
+-- Indices de la tabla `usuarios`
 --
-ALTER TABLE `usuario`
+ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -88,21 +88,21 @@ ALTER TABLE `usuario`
 --
 
 --
--- AUTO_INCREMENT de la tabla `apuesta`
+-- AUTO_INCREMENT de la tabla `apuestas`
 --
-ALTER TABLE `apuesta`
+ALTER TABLE `apuestas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `partido`
+-- AUTO_INCREMENT de la tabla `partidos`
 --
-ALTER TABLE `partido`
+ALTER TABLE `partidos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `usuario`
+-- AUTO_INCREMENT de la tabla `usuarios`
 --
-ALTER TABLE `usuario`
+ALTER TABLE `usuarios`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -110,11 +110,11 @@ ALTER TABLE `usuario`
 --
 
 --
--- Filtros para la tabla `apuesta`
+-- Filtros para la tabla `apuestas`
 --
-ALTER TABLE `apuesta`
-  ADD CONSTRAINT `fk_partido_apuesta` FOREIGN KEY (`id_partido`) REFERENCES `partido` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_usuario_apuesta` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `apuestas`
+  ADD CONSTRAINT `fk_partido_apuesta` FOREIGN KEY (`id_partido`) REFERENCES `partidos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_usuario_apuesta` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
