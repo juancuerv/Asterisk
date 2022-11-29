@@ -13,8 +13,8 @@ const { connection, consultasDB } = require('./db');
 //-----------------------------------------------------
 
 let cedula = '';
-let datosCita = '';
-let cedulaCita = '';
+let datosApuesta = '';
+let cedulaApuesta = '';
 let fecha = '';
 let query = '';
 let resultado = '';
@@ -43,7 +43,7 @@ client.connect('http://localhost:8088', 'asterisk', 'asterisk', function (err, a
       const digit = event.digit;
 
       switch (digit) {
-        case '1':    //Consultar prueba de covid
+        case '1':    //Consultar resultados de apuestas
           incoming.removeListener('ChannelDtmfReceived', introMenu);
           play(channel, 'sound:covidCedula');
           covid(event, incoming, channel)
