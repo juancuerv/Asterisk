@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-11-2022 a las 05:08:51
+-- Tiempo de generación: 29-11-2022 a las 08:18:56
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.1.12
 
@@ -32,15 +32,16 @@ CREATE TABLE `apuestas` (
   `id_partido` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `marcador` varchar(10) NOT NULL,
-  `monto` int(11) NOT NULL
+  `monto` int(11) NOT NULL,
+  `resultado` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `apuestas`
 --
 
-INSERT INTO `apuestas` (`id`, `id_partido`, `id_usuario`, `marcador`, `monto`) VALUES
-(1, 1, 1, '2-1', 1000);
+INSERT INTO `apuestas` (`id`, `id_partido`, `id_usuario`, `marcador`, `monto`, `resultado`) VALUES
+(1, 1, 1, '2-1', 1000, 0);
 
 -- --------------------------------------------------------
 
@@ -52,15 +53,16 @@ CREATE TABLE `partidos` (
   `id` int(11) NOT NULL,
   `local` varchar(50) NOT NULL,
   `visitante` varchar(50) NOT NULL,
-  `fecha` date NOT NULL
+  `fecha` date NOT NULL,
+  `instancia` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `partidos`
 --
 
-INSERT INTO `partidos` (`id`, `local`, `visitante`, `fecha`) VALUES
-(1, 'Argentina', 'Mexico', '2022-11-25');
+INSERT INTO `partidos` (`id`, `local`, `visitante`, `fecha`, `instancia`) VALUES
+(1, 'Argentina', 'Mexico', '2022-11-25', 'Grupos');
 
 -- --------------------------------------------------------
 
@@ -70,15 +72,16 @@ INSERT INTO `partidos` (`id`, `local`, `visitante`, `fecha`) VALUES
 
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `cedula` int(10) NOT NULL
+  `cedula` int(10) NOT NULL,
+  `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `cedula`) VALUES
-(1, 1002958890);
+INSERT INTO `usuarios` (`id`, `cedula`, `nombre`) VALUES
+(1, 1002958890, 'Juan Cuervo');
 
 --
 -- Índices para tablas volcadas
