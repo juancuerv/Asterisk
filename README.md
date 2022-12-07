@@ -8,10 +8,19 @@ La opción "2" le permite al usuario realizar una nueva apuesta, por lo que, en 
 
 # Configuración del proyecto
 npm install, para instalar todas las dependencias de node para el correcto funcionamiento.
-npm install gtts, para instalar la api de google text to speech
-npm i sox-audio, para instalar la api que convierte de mp3 a gsm
-apt install libsox-fmt-all, para maneja las extensiones
-npm install mysql
+
+
+
+npm install gtts, para instalar la api de google text to speech.
+
+
+npm i sox-audio, para instalar la api que convierte de mp3 a gsm.
+
+
+apt install libsox-fmt-all, para maneja las extensiones mp3.
+
+
+npm install mysql.
 
 node index.js para ejecutar el sistema.
 
