@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 05-12-2022 a las 03:39:40
+-- Tiempo de generación: 10-12-2022 a las 03:15:45
 -- Versión del servidor: 10.4.16-MariaDB
 -- Versión de PHP: 7.4.12
 
@@ -44,10 +44,14 @@ CREATE TABLE `apuestas` (
 --
 
 INSERT INTO `apuestas` (`id_apuesta`, `id_usuario`, `id_partido`, `goles_local`, `goles_visitante`, `monto`, `fecha_apuesta`, `jugado`, `pagado`) VALUES
-(1, 1, 1, 2, 3, 5000, '2022-11-28', 0, 0),
-(2, 1, 1, 1, 1, 10000, '2022-11-29', 0, 0),
-(3, 1, 2, 5, 5, 2000, '2022-12-04', 0, 0),
-(4, 1, 2, 2, 7, 100, '2022-12-04', 0, 0);
+(1, 1, 1, 2, 2, 5000, '2022-12-07', 2, 0),
+(2, 2, 1, 2, 3, 10000, '2022-12-07', 1, 0),
+(3, 1, 2, 5, 5, 2000, '2022-12-04', 1, 0),
+(4, 2, 2, 1, 1, 100, '2022-12-04', 2, 0),
+(5, 1, 3, 2, 2, 50, '2022-12-06', 0, 0),
+(6, 2, 3, 0, 0, 1000, '2022-12-06', 0, 0),
+(7, 1, 3, 1, 2, 6000, '2022-12-09', 0, 0),
+(8, 2, 3, 3, 3, 5000, '2022-12-09', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -67,8 +71,11 @@ CREATE TABLE `partidos` (
 --
 
 INSERT INTO `partidos` (`id_partido`, `local`, `visitante`, `fecha_partido`) VALUES
-(1, 'América', 'Cali', '2022-12-16'),
-(2, 'Argentina', 'Uruguay', '2022-12-30');
+(1, 'Paìses Bajos', 'Argentina', '2022-12-09'),
+(2, 'Croacia', 'Brasil', '2022-12-09'),
+(3, 'Inglaterra', 'Francia', '2022-12-10'),
+(4, 'Marruecos', 'Portugal', '2022-12-10'),
+(5, 'Argentina', 'Croacia', '2022-12-13');
 
 -- --------------------------------------------------------
 
@@ -88,7 +95,8 @@ CREATE TABLE `resultados_partido` (
 --
 
 INSERT INTO `resultados_partido` (`id_resultado`, `id_partido`, `goles_local`, `goles_visitante`) VALUES
-(1, 1, 1, 1);
+(1, 1, 2, 2),
+(2, 2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -106,7 +114,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `cedula`) VALUES
-(1, 123);
+(1, 123),
+(2, 456),
+(3, 789);
 
 --
 -- Índices para tablas volcadas
@@ -147,25 +157,25 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `apuestas`
 --
 ALTER TABLE `apuestas`
-  MODIFY `id_apuesta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_apuesta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `partidos`
 --
 ALTER TABLE `partidos`
-  MODIFY `id_partido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_partido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `resultados_partido`
 --
 ALTER TABLE `resultados_partido`
-  MODIFY `id_resultado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_resultado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas

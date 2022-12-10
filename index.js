@@ -4,7 +4,6 @@ var ClienteARI = require('ari-client');             //cliente
 
 const generarAudio = require('./helpers/tts');
 const convertirAudio = require('./helpers/sox');
-//conexión a base de datos: https://www.neoguias.com/como-conectarse-a-mysql-usando-node-js/
 
 const { connection, consultadb } = require('./dataBase');
 let cedula = '';
@@ -26,13 +25,12 @@ const pathAudios = `sound:/${__dirname}/audios/gsm/audio`;
 ClienteARI.connect('http://localhost:8088', 'asterisk', 'asterisk', function (err, ari) {
 
   if (err) {
-    throw err; // program will crash if it fails to connect
+    throw err;
   }
 
   // Use once to start the application
   ari.on('StasisStart', function (event, incoming) {
 
-    // Handle DTMF events
     incoming.answer(setTimeout((err) => {
      play(incoming,`sound:/${__dirname}/menuIntro`)
     }, 2000));
@@ -50,21 +48,23 @@ ClienteARI.connect('http://localhost:8088', 'asterisk', 'asterisk', function (er
       switch (digit) {
         case '1':    //Consultar resultados de apuestas
           incoming.removeListener('ChannelDtmfReceived', introMenu);
-          //play(channel, 'sound:ConsultaApuestaCedula');
           console.log('- ConsultarApuesta -');
+	        text='Por favor digite su cédula, seguida de la tecla numeral.';
+	        await generarAudio(text);
+          await convertirAudio();
+          await play(incoming,pathAudios);
           console.log('Digite su cedula seguido de la tecla #');
           console.log('Si está inconforme con el número ingresado, digite *');
           consultA(event, incoming, channel);
           break;
 
         case '2': //Realizar una nueva apuesta
-          incoming.removeListener('ChannelDtmfReceived', introMenu);
-          //play(channel, 'sound:nuevaApuesta');
+          incoming.removeListener('ChannelDtmfReceived', introMenu);          
           console.log('- RealizarApuesta -');
- text='Por favor digite su cédula, seguida de la tecla numeral';
- await generarAudio(text);
- await convertirAudio();
- await play(incoming,pathAudios);
+	        text='Por favor digite su cédula, seguida de la tecla numeral.';
+	        await generarAudio(text);
+ 	        await convertirAudio();
+ 	        await play(incoming,pathAudios);
           console.log('Digite su cedula seguido de la tecla #');
           console.log('Si está inconforme con el número ingresado, digite *');
           nuevaA(event, incoming);
@@ -107,7 +107,6 @@ ClienteARI.connect('http://localhost:8088', 'asterisk', 'asterisk', function (er
     var playback = ari.Playback();
     playback.once('PlaybackFinished',
       function (event, instance) {
-
         if (callback) {
           callback(null);
         }
@@ -119,18 +118,17 @@ ClienteARI.connect('http://localhost:8088', 'asterisk', 'asterisk', function (er
 
   async function consultarApuesta(event, incoming) {
     let dato = event.digit;
-    // Grabacion de peticion de cedula y marcacion de #
     switch (dato) {
       case '#':
         incoming.removeListener('ChannelDtmfReceived', consultarApuesta);
-console.log('## Seleccion de tipo de apuesta a consultar ##');
+	      console.log('## Seleccion de tipo de apuesta a consultar ##');
         console.log('1. última apuesta ganada y no pagada');
         console.log('2. Última apuesta pérdida');
         console.log('3. Última apuesta no jugada');
-text='Seleccion de tipo de apuesta a consultar. 1. última apuesta ganada y no pagada. 2. Última apuesta pérdida. 3. Última apuesta no jugada';
-await generarAudio(text);
-await convertirAudio();
-await play(incoming, pathAudios);
+	      text='Seleccion de tipo de apuesta a consultar: 1. última apuesta ganada y no pagada. 2. Última apuesta pérdida. 3. Última apuesta no jugada.';
+	      await generarAudio(text);
+	      await convertirAudio();
+	      await play(incoming, pathAudios);
         incoming.on('ChannelDtmfReceived', consultaTipoA);
         break;
 
@@ -150,7 +148,6 @@ await play(incoming, pathAudios);
 
   async function consultaTipoA(event, incoming) {
     let dato = event.digit;
-    // Grabacion de peticion de tipo de apuestas a consultar
     switch (dato) {
       case '1':
         console.log('-- Consulta última apuesta ganada y no pagada --');
@@ -159,28 +156,26 @@ await play(incoming, pathAudios);
         query = 'SELECT partidos.local, partidos.visitante, apuestas.goles_local, apuestas.goles_visitante, apuestas.monto, partidos.fecha_partido FROM apuestas INNER JOIN usuarios ON apuestas.id_usuario=usuarios.id_usuario INNER JOIN partidos ON partidos.id_partido=apuestas.id_partido WHERE usuarios.cedula = '+cedula+' and apuestas.jugado='+tipo_apuesta+' and apuestas.pagado=0 ORDER BY apuestas.id_apuesta desc limit 1';
         console.log(query);
         resultado = await consultadb(query)
-          .then(function (resultado) {
+          .then(async function (resultado) {
             if (!resultado) return
             if(resultado.length!=0){
               resultaux=JSON.parse(JSON.stringify(resultado));
-              text ='Usted ha ganado la apuesta '+resultaux[0].local+' vs '+resultaux[0].visitante+' con el marcador '+resultaux[0].goles_local+'-'+resultaux[0].goles_visitante+' y el monto de '+resultaux[0].monto+'. Este partido se jugó el '+resultaux[0].fecha_partido.slice(0,10)+'.';
-            }else{
+              text ='Usted ha ganado la apuesta '+resultaux[0].local+' versus '+resultaux[0].visitante+' con el marcador '+resultaux[0].goles_local+' a '+resultaux[0].goles_visitante+' y el monto de '+resultaux[0].monto+'. Este partido se jugó el '+resultaux[0].fecha_partido.slice(0,10)+'.';
+	          }else{
               text = 'Usted no cuenta con apuestas ganadas. ';
               console.log('Resultado vacío');
             }
           })
           .catch(text = 'La consulta realizada ha sido fallida, intente de nuevo.')
-
-        console.log(text);
-query = '';
-text=text+'Gracias por preferirnos, esperamos que disfrutes de este mundial. Hasta pronto.';
+	      query = '';
+	      text=text+'Gracias por preferirnos, esperamos que disfrutes de este mundial. Hasta pronto.';
         console.log(text);
         await generarAudio(text);
         await convertirAudio();
         await play(incoming, pathAudios);
-setTimeout(function () {
+	      setTimeout(function () {
           colgarLLamada(incoming);
-        }, 4000)
+        }, 20000)
         break;
 
       case '2':
@@ -195,7 +190,7 @@ setTimeout(function () {
               console.log(resultado);
              if(resultado.length!=0){
                 resultaux=JSON.parse(JSON.stringify(resultado));
-                text ='Usted ha pérdido la apuesta '+resultaux[0].local+' vs '+resultaux[0].visitante+' con el marcador '+resultaux[0].goles_local+'-'+resultaux[0].goles_visitante+' y el monto de '+resultaux[0].monto+'. Este partido se jugará el '+resultaux[0].fecha_partido.slice(0,10)+'.';
+                text ='Usted ha pérdido la apuesta '+resultaux[0].local+' versus '+resultaux[0].visitante+' con el marcador '+resultaux[0].goles_local+' a '+resultaux[0].goles_visitante+' y el monto de '+resultaux[0].monto+'. Este partido se jugò el '+resultaux[0].fecha_partido.slice(0,10)+'.';
               }else{
                 text = 'Usted no cuenta con apuestas pérdidas.';
                 console.log('Resultado vacío');
@@ -203,16 +198,15 @@ setTimeout(function () {
             })
             .catch(text = 'La consulta realizada ha sido fallida, intente de nuevo.')
 
-        console.log(text);
         query = '';
-text=text+'Gracias por preferirnos, esperamos que disfrutes de este mundial. Hasta pronto.';
+	      text=text+'Gracias por preferirnos, esperamos que disfrutes de este mundial. Hasta pronto.';
         console.log(text);
         await generarAudio(text);
         await convertirAudio();
         await play(incoming, pathAudios);
-setTimeout(function () {
+	      setTimeout(function () {
             colgarLLamada(incoming);
-        }, 4000)
+        }, 20000)
         break;
 
       case '3':
@@ -224,20 +218,18 @@ setTimeout(function () {
         resultado = await consultadb(query)
             .then(function (resultado) {
               if(resultado.length!=0){
-resultaux=JSON.parse(JSON.stringify(resultado));
-                text ='Usted ha apostado al partido '+resultaux[0].local+' vs '+resultaux[0].visitante+' con el marcador '+resultaux[0].goles_local+'-'+resultaux[0].goles_visitante+' y el monto de '+resultaux[0].monto+'. Este partido se jugará el '+resultaux[0].fecha_partido.slice(0,10)+'.';
+		          resultaux=JSON.parse(JSON.stringify(resultado));
+                text ='Usted ha apostado al partido '+resultaux[0].local+' versus '+resultaux[0].visitante+' con el marcador '+resultaux[0].goles_local+' a '+resultaux[0].goles_visitante+' y el monto de '+resultaux[0].monto+'. Este partido se jugará el '+resultaux[0].fecha_partido.slice(0,10)+'.';
               }else{
-                text = 'Usted no ha realizado ninguna apuesta o todas ya cuantan con un resultado';
+                text = 'Usted no ha realizado ninguna apuesta o todas ya cuantan con un resultado.';
                 console.log('Resultado vacío');
               }
             })
             .catch(text = 'La consulta realizada ha sido fallida, intente de nuevo')
-
-        console.log(text);
-query = '';
+	      query = '';
         text=text+'Gracias por preferirnos, esperamos que disfrutes de este mundial. Hasta pronto.';
-console.log(text);
-await generarAudio(text);
+	      console.log(text);
+	      await generarAudio(text);
         await convertirAudio();
         await play(incoming, pathAudios);
         setTimeout(function () {
@@ -248,9 +240,9 @@ await generarAudio(text);
       default:
         incoming.removeListener('ChannelDtmfReceived', consultaTipoA);
         console.log('default');
-        text = 'Tipo de apuesta no válida, inténtelo de nuevo';
+        text = 'Tipo de apuesta no válida, inténtelo de nuevo.';
         console.log(text);
-await generarAudio(text);
+	      await generarAudio(text);
         await convertirAudio();
         await play(incoming, pathAudios);
         incoming.on('ChannelDtmfReceived', consultarApuesta);
@@ -260,11 +252,10 @@ await generarAudio(text);
 
   async function realizarApuesta(event, incoming) {
     let dato2 = event.digit;
-    // Grabacion de peticion de cedula y marcacion de #
     switch (dato2) {
       case '#':
         incoming.removeListener('ChannelDtmfReceived', realizarApuesta);
-console.log('Concluye ingreso de cèdula');
+	      console.log('Concluye ingreso de cédula');
         incoming.on('ChannelDtmfReceived', elegirPartido);
         break;
 
@@ -291,24 +282,23 @@ console.log('Concluye ingreso de cèdula');
           if (!resultado) return
           if(resultado.length!=0){
             resultaux=JSON.parse(JSON.stringify(resultado));
-            text ='1. '+resultaux[0].local+' vs '+resultaux[0].visitante+'. Fecha: '+resultaux[0].fecha_partido.slice(0,10)+'.';
-            //console.log(text);
-            text =text+'2. '+resultaux[1].local+' vs '+resultaux[1].visitante+'. Fecha: '+resultaux[1].fecha_partido.slice(0,10)+'.';
+            text ='1. '+resultaux[0].local+' versus '+resultaux[0].visitante+'. Fecha: '+resultaux[0].fecha_partido.slice(0,10)+'.';
+            text =text+'2. '+resultaux[1].local+' versus '+resultaux[1].visitante+'. Fecha: '+resultaux[1].fecha_partido.slice(0,10)+'.';
             console.log(text);
-   await generarAudio(text);
+   	        await generarAudio(text);
             await convertirAudio();
             await play(incoming, pathAudios);
-   incoming.removeListener('ChannelDtmfReceived', elegirPartido);
+   	        incoming.removeListener('ChannelDtmfReceived', elegirPartido);
             incoming.on('ChannelDtmfReceived', elegirPartido2);
           }else{
             text = 'No hay partido próximos para apostar.';
             console.log('Resultado vacío');
             console.log(text);
-   await generarAudio(text);
+   	        await generarAudio(text);
             await convertirAudio();
             await play(incoming, pathAudios);
             incoming.removeListener('ChannelDtmfReceived', elegirPartido);
-   setTimeout(function () {
+   	        setTimeout(function () {
               colgarLLamada(incoming);
             }, 4000)
           }
@@ -318,19 +308,18 @@ console.log('Concluye ingreso de cèdula');
 
   async function elegirPartido2(event, incoming) {
     let dato3 = event.digit;
-    // Grabacion de peticion de tipo de apuestas a consultar
     switch (dato3) {
       case '1':
         datosapuesta='';
         id_partido=resultaux[0].id_partido;
         incoming.removeListener('ChannelDtmfReceived', elegirPartido2);
         console.log('-- apuesta --');
-        text='ingrese los datos en el siguiente formato: marcador1, marcador2, monto de la apuesta y #. Sin espacios. Recuerde que el marcador de cada equipo sólo puede ir de 0 a 9';
-console.log(text);
-await generarAudio(text);
+        text='ingrese los datos en el siguiente formato: marcador1, marcador2, monto de la apuesta y #. Sin espacios. Recuerde que el marcador de cada equipo sólo puede ir de 0 a 9.';
+	      console.log(text);
+	      await generarAudio(text);
         await convertirAudio();
         await play(incoming, pathAudios);
-incoming.on('ChannelDtmfReceived', elegirPartido21);
+	      incoming.on('ChannelDtmfReceived', elegirPartido21);
         break;
 
       case '2':
@@ -338,7 +327,7 @@ incoming.on('ChannelDtmfReceived', elegirPartido21);
         id_partido=resultaux[1].id_partido;
         incoming.removeListener('ChannelDtmfReceived', elegirPartido2);
         console.log('-- apuesta --');
-        text='ingrese los datos en el siguiente formato: marcador1, marcador2, monto de la apuesta y #. Sin espacios. Recuerde que el marcador de cada equipo sólo puede ir de 0 a 9';
+        text='ingrese los datos en el siguiente formato: marcador1, marcador2, monto de la apuesta y #. Sin espacios. Recuerde que el marcador de cada equipo sólo puede ir de 0 a 9.';
         console.log(text);
         await generarAudio(text);
         await convertirAudio();
@@ -420,15 +409,15 @@ incoming.on('ChannelDtmfReceived', elegirPartido21);
           id_usuario=resultaux[0].id_usuario;
           console.log(id_usuario);
         }else{
-          text = 'Usted no se encuentra registrado en nuestro sistema';
+          text = 'Usted no se encuentra registrado en nuestro sistema.';
           console.log('Resultado vacío');
- await generarAudio(text);
+ 	        await generarAudio(text);
           await convertirAudio();
           await play(incoming, pathAudios);
           console.log(text);
           setTimeout(function () {
             colgarLLamada(incoming);
-          }, 4000)
+          }, 6000)
         }
       })
       .catch(console.log('La consulta realizada ha sido fallida, intente de nuevo'))
@@ -442,9 +431,9 @@ incoming.on('ChannelDtmfReceived', elegirPartido21);
     resultado = await consultadb(query)
       .then(function (resultado) {
         if (!resultado) return
-          text = 'Apuesta registrada Exitosamente';
+          text = 'Apuesta registrada Exitosamente. ';
       })
-      .catch(text = 'La apuesta no fue registrada, intentelo de nuevo')
+      .catch(text = 'La apuesta no fue registrada, intentelo de nuevo. ')
     console.log(text);
     query = '';
     text=text+'Gracias por preferirnos, esperamos que disfrutes de este mundial. Hasta pronto.';
@@ -454,7 +443,7 @@ incoming.on('ChannelDtmfReceived', elegirPartido21);
     await play(incoming, pathAudios);
     setTimeout(function () {
       colgarLLamada(incoming);
-    }, 4000)
+    }, 10000)
        
   }
 
